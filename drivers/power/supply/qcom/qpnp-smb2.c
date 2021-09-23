@@ -2568,7 +2568,7 @@ int32_t get_ID_vadc_voltage(void)
 	return adc;
 }
 
-#define COUNTRY_CODE_PATH "/persist/flag/countrycode.txt"
+#define COUNTRY_CODE_PATH "/mnt/vendor/persist/flag/countrycode.txt"
 
 void read_BR_countrycode_work(struct work_struct *work)
 {
