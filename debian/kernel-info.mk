@@ -144,7 +144,7 @@ FLASH_INFO_MODEL = Zenfone Max Pro M1
 FLASH_INFO_CPU = Qualcomm Technologies, Inc SDM636
 
 # Space-separated list of supported device ids as reported by fastboot
-FLASH_INFO_DEVICE_IDS = X00TD
+FLASH_INFO_DEVICE_IDS = sdm660
 
 ########################################################################
 # Kernel build settings
