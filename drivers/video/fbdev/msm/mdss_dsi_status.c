@@ -30,10 +30,8 @@
 #include "mdss_panel.h"
 #include "mdss_mdp.h"
 
-#if defined(CONFIG_MACH_ASUS_X00TD)
+#ifdef CONFIG_MACH_ASUS_X00TD
 #define STATUS_CHECK_INTERVAL_MS 500
-#elif defined(CONFIG_MACH_ASUS_X01BD)
-#define STATUS_CHECK_INTERVAL_MS 2000
 #else
 #define STATUS_CHECK_INTERVAL_MS 5000
 #endif
@@ -219,7 +217,8 @@ static int fb_event_callback(struct notifier_block *self,
 	return 0;
 }
 
-static int param_dsi_status_disable(const char *val, struct kernel_param *kp)
+static int param_dsi_status_disable(const char *val,
+				    const struct kernel_param *kp)
 {
 	int ret = 0;
 	int int_val;
@@ -234,7 +233,7 @@ static int param_dsi_status_disable(const char *val, struct kernel_param *kp)
 	return ret;
 }
 
-static int param_set_interval(const char *val, struct kernel_param *kp)
+static int param_set_interval(const char *val, const struct kernel_param *kp)
 {
 	int ret = 0;
 	int int_val;
@@ -264,7 +263,7 @@ int __init mdss_dsi_status_init(void)
 		return -ENOMEM;
 	}
 
-#ifdef CONFIG_MACH_ASUS_X01BD
+#ifdef CONFIG_MACH_ASUS_SDM660
 	pstatus_data->is_first_check = 1;
 #endif
 	pstatus_data->fb_notifier.notifier_call = fb_event_callback;

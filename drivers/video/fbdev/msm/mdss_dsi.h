@@ -24,7 +24,7 @@
 #include "mdss_dsi_cmd.h"
 #include "mdss_dsi_clk.h"
 
-#if (defined(CONFIG_MACH_ASUS_X00TD) && defined(CONFIG_TOUCHSCREEN_NT36xxx)) || (defined(CONFIG_MACH_ASUS_X01BD) && defined(CONFIG_TOUCHSCREEN_NT36xxx_X01BD))
+#ifdef CONFIG_MACH_ASUS_X00TD
 extern int nvt_tp_check;
 #endif
 
@@ -506,7 +506,7 @@ struct mdss_dsi_ctrl_pdata {
 	struct dsi_panel_cmds off_cmds;
 	struct dsi_panel_cmds lp_on_cmds;
 	struct dsi_panel_cmds lp_off_cmds;
-#if defined(CONFIG_MACH_ASUS_X00TD) || defined(CONFIG_MACH_ASUS_X01BD)
+#ifdef CONFIG_MACH_ASUS_SDM660
 	struct dsi_panel_cmds esd_recover_cmds;
 #endif
 	struct dsi_panel_cmds status_cmds;
@@ -607,7 +607,7 @@ struct dsi_status_data {
 	struct notifier_block fb_notifier;
 	struct delayed_work check_status;
 	struct msm_fb_data_type *mfd;
-#ifdef CONFIG_MACH_ASUS_X01BD
+#ifdef CONFIG_MACH_ASUS_SDM660
 	bool is_first_check;
 #endif
 };

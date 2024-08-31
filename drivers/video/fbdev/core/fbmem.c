@@ -32,6 +32,7 @@
 #include <linux/device.h>
 #include <linux/efi.h>
 #include <linux/fb.h>
+#include <linux/overflow.h>
 
 #include <asm/fb.h>
 
@@ -981,6 +982,7 @@ fb_set_var(struct fb_info *info, struct fb_var_screeninfo *var)
 	if ((var->activate & FB_ACTIVATE_FORCE) ||
 	    memcmp(&info->var, var, sizeof(struct fb_var_screeninfo))) {
 		u32 activate = var->activate;
+		u32 unused;
 
 		/* When using FOURCC mode, make sure the red, green, blue and
 		 * transp fields are set to 0.
@@ -1000,6 +1002,15 @@ fb_set_var(struct fb_info *info, struct fb_var_screeninfo *var)
 			*var = info->var;
 			goto done;
 		}
+
+		/* bitfill_aligned() assumes that it's at least 8x8 */
+		if (var->xres < 8 || var->yres < 8)
+			return -EINVAL;
+
+		/* Too huge resolution causes multiplication overflow. */
+		if (check_mul_overflow(var->xres, var->yres, &unused) ||
+		    check_mul_overflow(var->xres_virtual, var->yres_virtual, &unused))
+			return -EINVAL;
 
 		ret = info->fbops->fb_check_var(var, info);
 
@@ -1090,9 +1101,11 @@ fb_blank(struct fb_info *info, int blank)
  	return ret;
 }
 EXPORT_SYMBOL(fb_blank);
-#ifdef CONFIG_MACH_ASUS_X01BD
+
+#ifdef CONFIG_MACH_ASUS_SDM660
 bool lcd_suspend_flag = false;
 #endif
+
 static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 			unsigned long arg, struct file *file)
 {
@@ -1222,10 +1235,10 @@ static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 			return -ENODEV;
 		}
 		info->flags |= FBINFO_MISC_USEREVENT;
-#ifdef CONFIG_MACH_ASUS_X01BD
+#ifdef CONFIG_MACH_ASUS_SDM660
 		if (arg == FB_BLANK_POWERDOWN) {
 			lcd_suspend_flag = true;
-			printk("[Display] FB_BLANK_POWERDOWN\n");
+			pr_debug("[Display] FB_BLANK_POWERDOWN\n");
 		}
 #endif
 		ret = fb_blank(info, arg);
